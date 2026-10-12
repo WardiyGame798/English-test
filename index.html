@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Thi Kiểm Tra Tiếng Anh Tổng Hợp - Chuẩn Quốc Tế</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-bottom: 4px solid var(--primary);
+        }
+
+        h1 { margin: 0 0 10px 0; color: var(--primary); font-size: 1.5rem; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .q-number {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .q-text {
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .option-label:hover { background: #e2e8f0; }
+
+        .option-label input[type="radio"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-submit:hover { opacity: 0.95; }
+
+        /* Vùng kết quả bài thi */
+        #result-board {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid var(--primary);
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .feedback-box.correct {
+            background-color: #dcfce7;
+            color: var(--success);
+            border: 1px solid #86efac;
+        }
+
+        .feedback-box.incorrect {
+            background-color: #fee2e2;
+            color: var(--danger);
+            border: 1px solid #fca5a5;
+        }
+
+        .explanation {
+            font-weight: normal;
+            font-size: 0.95rem;
+            margin-top: 5px;
+            color: #334155;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bài Thi Kiểm Tra Tiếng Anh Chuẩn Quốc Tế</h1>
+            <p>Thời lượng: Không giới hạn | Tổng số câu: <span id="header-total">0</span> câu</p>
+        </header>
+
+        <!-- BẢNG TỔNG KẾT ĐIỂM SỐ (Chỉ hiện sau khi bấm Nộp Bài) -->
+        <div id="result-board" role="region" aria-label="Kết quả bài thi">
+            <h2>KẾT QUẢ BÀI THI CỦA BẠN</h2>
+            <div class="score-display"><span id="user-score">0</span> / <span id="max-score">0</span></div>
+            <p id="score-comment" style="font-size: 1.1rem; font-weight: 500;"></p>
+            <button class="btn-submit" style="background: #475569; width: auto; padding: 10px 20px; font-size: 1rem;" onclick="location.reload()">Làm lại bài thi</button>
+        </div>
+
+        <form id="quiz-form">
+            <div id="questions-container">
+                <!-- Danh sách câu hỏi sẽ nạp tự động ở đây -->
+            </div>
+
+            <button type="button" class="btn-submit" onclick="submitExam()">NỘP BÀI THI & CHẤM ĐIỂM</button>
+        </form>
+
+        <!-- Vùng thông báo âm thanh riêng biệt cho NVDA / TalkBack -->
+        <div id="sr-announcer" class="sr-only" aria-live="assertive"></div>
+    </div>
+
+    <script>
+        // DỮ LIỆU BỘ ĐỀ THI QUỐC TẾ (Động từ bất quy tắc + 12 Thì + Ngữ pháp tổng hợp)
+        const examQuestions = [
+            // --- ĐỘNG TỪ BẤT QUY TẮC ---
+            {
+                type: 'irregular',
+                v1: 'go',
+                meaning: 'đi, di chuyển',
+                v2: 'went',
+                v3: 'gone'
+            },
+            {
+                type: 'irregular',
+                v1: 'take',
+                meaning: 'chiếm giữ, lấy, mang theo',
+                v2: 'took',
+                v3: 'taken'
+            },
+            {
+                type: 'irregular',
+                v1: 'fly',
+                meaning: 'bay',
+                v2: 'flew',
+                v3: 'flown'
+            },
+            {
+                type: 'irregular',
+                v1: 'build',
+                meaning: 'xây dựng, chế tạo',
+                v2: 'built',
+                v3: 'built'
+            },
+            {
+                type: 'irregular',
+                v1: 'understand',
+                meaning: 'hiểu, nắm rõ',
+                v2: 'understood',
+                v3: 'understood'
+            },
+
+            // --- TRẮC NGHIỆM CHIA THÌ & CẤU TRÚC CÂU ---
+            {
+                type: 'mcq',
+                prompt: 'By the time the manager arrived, the team _____ the technical report.',
+                options: ['finished', 'has finished', 'had finished', 'was finishing'],
+                correct: 2,
+                explanation: 'Thì Quá khứ hoàn thành (had finished): Diễn tả hành động đã hoàn thành trước một mốc thời gian trong quá khứ (by the time...).'
+            },
+            {
+                type: 'mcq',
+                prompt: 'If they _____ earlier, they would not have missed the scheduled flight.',
+                options: ['departed', 'had departed', 'have departed', 'would depart'],
+                correct: 1,
+                explanation: 'Câu điều kiện loại 3 (giả định trái với quá khứ): Mệnh đề If dùng "had + V3" (had departed).'
+            },
+            {
+                type: 'mcq',
+                prompt: 'The new system _____ by the engineers since last month.',
+                options: ['is tested', 'was tested', 'has been tested', 'had been tested'],
+                correct: 2,
+                explanation: 'Câu bị động ở thì Hiện tại hoàn thành: S + have/has + been + V3 (has been tested), do có dấu hiệu "since last month".'
+            },
+            {
+                type: 'mcq',
+                prompt: 'The specialist _____ designed the main software architecture is joining our meeting.',
+                options: ['which', 'whom', 'who', 'whose'],
+                correct: 2,
+                explanation: 'Mệnh đề quan hệ: Dùng "who" để thay thế cho danh từ chỉ người (The specialist) đóng vai trò làm chủ ngữ.'
+            },
+            {
+                type: 'mcq',
+                prompt: 'He asked me where I _____ the technical equipment the day before.',
+                options: ['buy', 'bought', 'had bought', 'have bought'],
+                correct: 2,
+                explanation: 'Câu tường thuật (Reported Speech): Lùi thì từ Quá khứ đơn về Quá khứ hoàn thành (had bought) do có "the day before".'
+            },
+            {
+                type: 'mcq',
+                prompt: 'You _____ turn off all electronic devices before entering the restricted area.',
+                options: ['must', 'might', 'should', 'could'],
+                correct: 0,
+                explanation: 'Động từ tình thái (Modal Verb): "must" thể hiện sự bắt buộc hoặc quy định nghiêm ngặt.'
+            }
+        ];
+
+        document.getElementById('header-total').textContent = examQuestions.length;
+        const container = document.getElementById('questions-container');
+
+        // Hiển thị câu hỏi
+        function renderExam() {
+            container.innerHTML = '';
+            examQuestions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.id = `card-${idx}`;
+
+                let html = `<div class="q-number">Câu ${idx + 1}</div>`;
+
+                if (q.type === 'irregular') {
+                    html += `
+                        <div class="q-text">Điền dạng Quá khứ (V2) và Quá khứ phân từ (V3) của động từ: <strong>${q.v1}</strong> (Nghĩa: <em>${q.meaning}</em>)</div>
+                        <div class="input-group">
+                            <input type="text" id="v2-${idx}" placeholder="Cột V2" aria-label="Nhập V2 cho ${q.v1}">
+                            <input type="text" id="v3-${idx}" placeholder="Cột V3" aria-label="Nhập V3 cho ${q.v1}">
+                        </div>
+                    `;
+                } else if (q.type === 'mcq') {
+                    html += `
+                        <div class="q-text"><strong>${q.prompt}</strong></div>
+                        <div class="options-list">
+                            ${q.options.map((opt, oIdx) => `
+                                <label class="option-label">
+                                    <input type="radio" name="question-${idx}" value="${oIdx}">
+                                    ${String.fromCharCode(65 + oIdx)}.${opt}
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                html += `<div id="feedback-${idx}" class="feedback-box" style="display:none;"></div>`;
+                card.innerHTML = html;
+                container.appendChild(card);
+            });
+        }
+
+        // Xử lý nộp bài và chấm điểm toàn bộ
+        function submitExam() {
+            let score = 0;
+
+            examQuestions.forEach((q, idx) => {
+                const fb = document.getElementById(`feedback-${idx}`);
+                fb.style.display = 'block';
+
+                if (q.type === 'irregular') {
+                    const v2Input = (document.getElementById(`v2-${idx}`).value || '').trim().toLowerCase();
+                    const v3Input = (document.getElementById(`v3-${idx}`).value || '').trim().toLowerCase();
+
+                    const isCorrect = (v2Input === q.v2.toLowerCase()) && (v3Input === q.v3.toLowerCase());
+
+                    if (isCorrect) {
+                        score++;
+                        fb.className = 'feedback-box correct';
+                        fb.innerHTML = `✓ CHÍNH XÁC! <div class="explanation">Đã điền đúng: V1: ${q.v1} | V2: ${q.v2} | V3: ${q.v3}</div>`;
+                    } else {
+                        fb.className = 'feedback-box incorrect';
+                        fb.innerHTML = `✗ SAI RỒI. <div class="explanation">Đáp án đúng phải là: V2 = <strong>${q.v2}</strong> | V3 = <strong>${q.v3}</strong></div>`;
+                    }
+                } else if (q.type === 'mcq') {
+                    const selected = document.querySelector(`input[name="question-${idx}"]:checked`);
+                    const userVal = selected ? parseInt(selected.value) : -1;
+
+                    if (userVal === q.correct) {
+                        score++;
+                        fb.className = 'feedback-box correct';
+                        fb.innerHTML = `✓ CHÍNH XÁC! <div class="explanation">${q.explanation}</div>`;
+                    } else {
+                        fb.className = 'feedback-box incorrect';
+                        fb.innerHTML = `✗ SAI RỒI. <div class="explanation">Đáp án đúng là: <strong>${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}</strong>.<br><em>Lý do:</em> ${q.explanation}</div>`;
+                    }
+                }
+            });
+
+            // Hiển thị bảng tổng kết điểm
+            const resultBoard = document.getElementById('result-board');
+            document.getElementById('user-score').textContent = score;
+            document.getElementById('max-score').textContent = examQuestions.length;
+
+            const percent = (score / examQuestions.length) * 100;
+            let comment = "";
+            if (percent === 100) comment = "Xuất sắc! Bạn đã làm đúng tuyệt đối toàn bộ bài thi!";
+            else if (percent >= 70) comment = "Rất tốt! Bạn nắm vững đa số các kiến thức ngữ pháp.";
+            else comment = "Bạn cần xem lại các câu báo đỏ bên dưới để củng cố lại bài học nhé!";
+
+            document.getElementById('score-comment').textContent = comment;
+            resultBoard.style.display = 'block';
+
+            // Cuộn lên đầu trang xem kết quả
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Thông báo cho NVDA / Talkback
+            const srText = `Đã hoàn thành bài thi. Tổng điểm của bạn là ${score} trên ${examQuestions.length} câu. ${comment}`;
+            document.getElementById('sr-announcer').textContent = srText;
+
+            // Khóa không cho sửa đáp án
+            const inputs = document.querySelectorAll('input, button[type="button"]');
+            inputs.forEach(el => el.disabled = true);
+        }
+
+        renderExam();
+    </script>
+</body>
+</html>
